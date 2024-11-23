@@ -1,0 +1,23 @@
+import gensim.downloader as api
+import numpy as np
+
+# Load the pre-trained Word2Vec model
+model = api.load('word2vec-google-news-300')
+
+# Define words for analogy
+word_a, word_b, word_c = 'rupee', 'india', 'dollar'
+
+# Perform analogy reasoning: word_a is to word_b as word_c is to ?
+result = model.most_similar(positive=[word_b, word_c], negative=[word_a], topn=1)
+word_d = result[0][0]
+
+# Display analogy and similarity
+print(f"'{word_a}' is to '{word_b}' as '{word_c}' is to '{word_d}'")
+print(f"Word: {word_d}, Similarity: {result[0][1]}")
+
+# Fetch and display vectors for the involved words
+words = [word_a, word_b, word_c, word_d]
+word_vectors = np.array([model[word] for word in words])
+
+for i, word in enumerate(words):
+    print(f"Vector for '{word}': {word_vectors[i]}")
