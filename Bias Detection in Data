@@ -1,0 +1,37 @@
+import pandas as pd
+import random
+
+# Function to generate a dataset
+def generate_dataset(num_records=1000):
+    data = {
+        "CustomerID": list(range(1, num_records + 1)),
+        "Gender": [random.choice(["Male", "Female"]) for _ in range(num_records)],
+        "Age": [random.randint(18, 65) for _ in range(num_records)],
+        "AnnualIncome": [random.randint(20000, 120000) for _ in range(num_records)],
+    }
+    return pd.DataFrame(data)
+
+# Function to check for gender bias
+def check_gender_bias(dataset):
+    gender_counts = dataset["Gender"].value_counts()
+    total_records = len(dataset)
+    male_percentage = (gender_counts.get("Male", 0) / total_records) * 100
+    female_percentage = (gender_counts.get("Female", 0) / total_records) * 100
+
+    # Print results
+    print(f"Gender Distribution:\n{gender_counts}\n")
+    print(f"Male Percentage: {male_percentage:.2f}%")
+    print(f"Female Percentage: {female_percentage:.2f}%\n")
+
+    # Check for imbalance
+    if abs(male_percentage - female_percentage) > 20:
+        print("Significant gender imbalance detected.")
+    else:
+        print("Gender distribution is balanced.")
+
+# Main execution
+if __name__ == "__main__":
+    # Generate dataset
+    customer_data = generate_dataset()
+    # Check for gender bias
+    check_gender_bias(customer_data)
