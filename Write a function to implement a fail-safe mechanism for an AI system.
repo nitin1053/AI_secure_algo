@@ -1,0 +1,28 @@
+import logging
+
+logging.basicConfig(
+    filename="ai_system.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+def monitor_system_status(system_status, overload_threshold, fail_safe_action):
+    for metric, value in system_status.items():
+        if value > overload_threshold:
+            logging.warning(f"System overload detected: {metric} at {value} exceeds threshold {overload_threshold}.")
+            fail_safe_action(metric, value)
+            logging.info(f"Fail-safe action triggered for {metric}.")
+        else:
+            logging.info(f"System status normal: {metric} at {value}.")
+
+def fail_safe_action(metric, value):
+    print(f"Fail-safe action executed for {metric}. Current value: {value}")
+
+system_status = {
+    "CPU_usage": 85.0,
+    "Memory_usage": 72.0,
+    "Disk_usage": 95.0
+}
+
+overload_threshold = 80.0
+monitor_system_status(system_status, overload_threshold, fail_safe_action)
