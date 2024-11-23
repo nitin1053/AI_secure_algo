@@ -1,0 +1,27 @@
+paragraph = """
+Artificial Intelligence and Machine Learning are revolutionizing
+industries across the world.
+Technology is growing at an unprecedented rate, making innovation a
+crucial factor for businesses to stay competitive.
+"""
+
+# Convert paragraph to lowercase and split into words
+words = paragraph.lower().split()
+
+# Define key terms to search for similar words
+key_terms = ['artificial', 'intelligence', 'technology', 'innovation']
+
+# Load the pre-trained Word2Vec model
+import gensim.downloader as api
+model = api.load('word2vec-google-news-300')
+
+# Find similar words for each key term
+for term in key_terms:
+    if term in model:
+        similar_words = model.most_similar(term, topn=5)
+        print(f"Words similar to '{term}':")
+        for word, similarity in similar_words:
+            print(f"  {word}: {similarity:.4f}")
+        print("\n")
+    else:
+        print(f"'{term}' not found in the model's vocabulary.\n")
