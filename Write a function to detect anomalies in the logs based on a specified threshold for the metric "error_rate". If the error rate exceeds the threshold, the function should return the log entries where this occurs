@@ -1,0 +1,34 @@
+import pandas as pd
+
+def detect_anomalies(logs: pd.DataFrame, threshold: float) -> pd.DataFrame:
+    anomalies = logs[logs['error_rate'] > threshold]
+    return anomalies.reset_index(drop=True)
+
+def load_logs(file_path: str) -> pd.DataFrame:
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        print(f"Error: The file '{file_path}' was not found.")
+        return None
+    except pd.errors.EmptyDataError:
+        print(f"Error: The file '{file_path}' is empty.")
+        return None
+    except pd.errors.ParserError:
+        print(f"Error: The file '{file_path}' could not be parsed.")
+        return None
+
+def main(file_path: str, threshold: float) -> None:
+    logs = load_logs(file_path)
+    if logs is not None:
+        anomalous_logs = detect_anomalies(logs, threshold)
+        if not anomalous_logs.empty:
+            print("Anomalous log entries:")
+            for index, row in anomalous_logs.iterrows():
+                print(f"Index: {index}, Error Rate: {row['error_rate']}, Message: {row['message']}")
+        else:
+            print("No anomalies detected.")
+
+if __name__ == "__main__":
+    file_path = '/content/sample_logs_1.csv'  # Update this with your file path
+    threshold = 0.15  # Define the threshold for error_rate
+    main(file_path, threshold)
