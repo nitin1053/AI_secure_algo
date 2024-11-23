@@ -1,0 +1,15 @@
+from collections import Counter
+
+def check_class_imbalance(labels):
+    counts = Counter(labels)
+
+    total = len(labels)
+
+    for label, count in counts.items():
+        percentage = (count / total) * 100
+        print(f"Class {label} count: {count} ({percentage:.2f}%)")
+
+if __name__ == "__main__":
+    # Example usage
+    labels = [0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1]
+    check_class_imbalance(labels)
