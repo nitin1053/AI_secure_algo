@@ -1,0 +1,23 @@
+import pandas as pd
+
+def detect_anomalies(logs, threshold):
+    anomalies = logs[logs["error_rate"] > threshold]
+    return anomalies
+
+if __name__ == "__main__":
+    # Load logs from CSV file
+    logs = pd.read_csv('/content/sample_logs_1.csv')
+
+    # Display the first few rows of the logs dataset
+    print("Logs Preview:")
+    print(logs.head())
+
+    # Define the threshold for anomaly detection
+    threshold = 0.19
+
+    # Detect anomalies based on the threshold
+    anomalies = detect_anomalies(logs, threshold)
+
+    # Print detected anomalies
+    print("\nAnomalies detected:")
+    print(anomalies)
