@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
+from tensorflow.keras import datasets, models, layers
+
+def moving_average(data, window_size):
+    return np.convolve(data, np.ones(window_size)/window_size, mode='valid')
+
+def monitor_performance(history, window_size=5):
+    accuracy = history.history['accuracy']
+    val_accuracy = history.history['val_accuracy']
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+
+    smoothed_accuracy = moving_average(accuracy, window_size)
+    smoothed_val_accuracy = moving_average(val_accuracy, window_size)
+    smoothed_loss = moving_average(loss, window_size)
+    smoothed_val_loss = moving_average(val_loss, window_size)
+
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(smoothed_accuracy, label='Training Accuracy (SMA)')
+    plt.plot(smoothed_val_accuracy, label='Validation Accuracy (SMA)', linestyle='--')
+    plt.title('Accuracy Over Time')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    plt.plot(smoothed_loss, label='Training Loss (SMA)')
+    plt.plot(smoothed_val_loss, label='Validation Loss (SMA)', linestyle='--')
+    plt.title('Loss Over Time')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+(train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+model = models.Sequential([
+    layers.Flatten(input_shape=(28, 28)),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
+
+monitor_performance(history, window_size=3)
