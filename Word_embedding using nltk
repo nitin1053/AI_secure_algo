@@ -1,0 +1,27 @@
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+from gensim.models import KeyedVectors
+import gensim.downloader as api
+
+# Load the pre-trained word2vec model (Google's Word2Vec)
+model = api.load('word2vec-google-news-300')
+
+# Define the paragraph
+paragraph = "The quick brown fox jumps over the lazy dog."
+
+# Tokenize the paragraph into words
+words = word_tokenize(paragraph)
+
+# Select key terms for which we want to find similar words
+key_terms = ["quick", "fox", "lazy"]
+
+# Find similar words using the word embeddings
+for term in key_terms:
+  try:
+    similar_words = model.most_similar(term, topn=5)
+    print(f"Similar words to '{term}':")
+    for word, similarity in similar_words:
+      print(f"- {word} (similarity: {similarity:.2f})")
+  except KeyError:
+    print(f"Word '{term}' not found in the model's vocabulary.")
