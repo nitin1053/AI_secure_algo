@@ -3,30 +3,26 @@ import matplotlib.pyplot as plt
 
 def monitor_ai_performance(data, metrics, window_size=5):
     if not set(metrics).issubset(data.columns):
-        raise ValueError("Some metrics specified are not present in the dataset.")
+        raise ValueError("Invalid metrics specified.")
     
-    # Create a smoothed version of each metric
-    smoothed_data = data.copy()
     for metric in metrics:
-        smoothed_data[f"{metric}_sma"] = data[metric].rolling(window=window_size, min_periods=1).mean()
-    
-    # Plot each metric and its smoothed version
+        data[f"{metric}_sma"] = data[metric].rolling(window=window_size, min_periods=1).mean()
+
     plt.figure(figsize=(12, 6))
     for metric in metrics:
-        plt.plot(data['timestamp'], data[metric], label=f"{metric} (raw)", alpha=0.5, linestyle='--')
-        plt.plot(smoothed_data['timestamp'], smoothed_data[f"{metric}_sma"], label=f"{metric} (SMA)", linewidth=2)
-    
-    # Customize the plot
-    plt.title("AI System Performance Metrics Over Time")
+        plt.plot(data['timestamp'], data[metric], '--', alpha=0.5, label=f"{metric} (raw)")
+        plt.plot(data['timestamp'], data[f"{metric}_sma"], label=f"{metric} (SMA)")
+    plt.title("AI Performance Metrics Over Time")
     plt.xlabel("Time")
     plt.ylabel("Metric Value")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
 # Sample DataFrame
 data = pd.DataFrame({
-    'timestamp': pd.date_range(start='2024-01-01', periods=20, freq='D'),
+    'timestamp': pd.date_range('2024-01-01', periods=20, freq='D'),
     'accuracy': [0.7, 0.75, 0.72, 0.74, 0.76, 0.78, 0.77, 0.79, 0.8, 0.82, 
                  0.81, 0.83, 0.85, 0.84, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91],
     'error_rate': [0.3, 0.25, 0.28, 0.26, 0.24, 0.22, 0.23, 0.21, 0.2, 0.18,
