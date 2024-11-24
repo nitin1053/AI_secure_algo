@@ -1,37 +1,32 @@
-# LAB 6
-
 import pandas as pd
 
 def anonymize_data(df, pii_columns, method="mask"):
     df_anonymized = df.copy()
 
     if method == "remove":
-        # Remove PII columns
-        df_anonymized.drop(columns=pii_columns, inplace=True)
+        # Drop PII columns
+        df_anonymized = df_anonymized.drop(columns=pii_columns)
     elif method == "mask":
-        # Mask PII columns by replacing values
+        # Mask PII columns with placeholder text
         for column in pii_columns:
-            if column in df_anonymized.columns:
-                # Replace each value with a placeholder
-                df_anonymized[column] = df_anonymized[column].apply(lambda x: f"{column}_anon")
+            df_anonymized[column] = f"{column}_anon"
     else:
-        raise ValueError("Method must be either 'remove' or 'mask'")
+        raise ValueError("Method must be 'remove' or 'mask'.")
 
     return df_anonymized
 
-# Sample DataFrame
+# Sample data
 data = {
     "Name": ["Alice Smith", "Bob Brown", "Charlie Davis"],
     "Email": ["alice@example.com", "bob@example.com", "charlie@example.com"],
     "Age": [25, 32, 45]
 }
 
-# Convert to DataFrame
 df = pd.DataFrame(data)
+pii_columns = ["Name", "Email"]
 
 # Anonymize the data
-pii_columns = ["Name", "Email"]
 anonymized_df = anonymize_data(df, pii_columns, method="mask")
 
-# Display the anonymized dataset
+# Display the anonymized DataFrame
 print(anonymized_df)
