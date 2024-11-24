@@ -1,0 +1,23 @@
+import numpy as np
+model = api.load('fasttext-wiki-news-subwords-300')
+
+word_a, word_b, word_c = 'delhi', 'india', 'colombo'
+
+try:
+    result = model.most_similar(positive=[word_b, word_c], negative=[word_a], topn=1)
+    word_d = result[0][0]
+    print(f"'{word_a}' is to '{word_b}' as '{word_c}' is to '{word_d}'")
+    print(f"Word: {word_d}, Similarity: {result[0][1]}")
+except KeyError:
+    print(f"One or more of the words ({word_a}, {word_b}, {word_c}) not found in the FastText model.")
+
+words = [word_a, word_b, word_c]
+if word_d:
+    words.append(word_d)
+
+try:
+    word_vectors = np.array([model[word] for word in words])
+    for i, word in enumerate(words):
+        print(f"Vector for '{word}': {word_vectors[i]}")
+except KeyError as e:
+    print(f"Error: Word '{e}' not found in the FastText model.")
