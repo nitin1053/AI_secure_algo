@@ -1,29 +1,37 @@
 # LAB 6
 
 import pandas as pd
-import hashlib
 
-def anonymize_dataset(file_path):
-    # Read the CSV file
-    df = pd.read_excel(file_path)
+def anonymize_data(df, pii_columns, method="mask"):
+    df_anonymized = df.copy()
 
-    # Function to hash a string
-    def hash_string(s):
-        return hashlib.sha256(s.encode()).hexdigest()[:8]
+    if method == "remove":
+        # Remove PII columns
+        df_anonymized.drop(columns=pii_columns, inplace=True)
+    elif method == "mask":
+        # Mask PII columns by replacing values
+        for column in pii_columns:
+            if column in df_anonymized.columns:
+                # Replace each value with a placeholder
+                df_anonymized[column] = df_anonymized[column].apply(lambda x: f"{column}_anon")
+    else:
+        raise ValueError("Method must be either 'remove' or 'mask'")
 
-    # Anonymize Name
-    df['Name'] = df['Name'].apply(lambda x: f"Person_{hash_string(x)}")
+    return df_anonymized
 
-    # Anonymize Email
-    df['Email'] = df['Email'].apply(lambda x: f"email_{hash_string(x)}@anonymous.com")
+# Sample DataFrame
+data = {
+    "Name": ["Alice Smith", "Bob Brown", "Charlie Davis"],
+    "Email": ["alice@example.com", "bob@example.com", "charlie@example.com"],
+    "Age": [25, 32, 45]
+}
 
-    # Age and Height are not PII, but we'll group them for additional privacy
-    df['Age'] = pd.cut(df['Age'], bins=[0, 30, 40, 50, 100], labels=['18-30', '31-40', '41-50', '51+'])
-    df['Height'] = pd.cut(df['Height'], bins=[0, 160, 170, 180, 200], labels=['<160cm', '160-170cm', '171-180cm', '>180cm'])
+# Convert to DataFrame
+df = pd.DataFrame(data)
 
-    return df
+# Anonymize the data
+pii_columns = ["Name", "Email"]
+anonymized_df = anonymize_data(df, pii_columns, method="mask")
 
-# Example usage
-file_path = '/content/drive/MyDrive/AI-Ethics/personal_dataset.xlsx'
-anonymized_df = anonymize_dataset(file_path)
+# Display the anonymized dataset
 print(anonymized_df)
