@@ -1,23 +1,29 @@
+# LAB 6
+
 import pandas as pd
+import hashlib
 
-def detect_anomalies(logs, threshold):
-    anomalies = logs[logs["error_rate"] > threshold]
-    return anomalies
+def anonymize_dataset(file_path):
+    # Read the CSV file
+    df = pd.read_excel(file_path)
 
-if __name__ == "__main__":
-    # Load logs from CSV file
-    logs = pd.read_csv('/content/sample_logs_1.csv')
+    # Function to hash a string
+    def hash_string(s):
+        return hashlib.sha256(s.encode()).hexdigest()[:8]
 
-    # Display the first few rows of the logs dataset
-    print("Logs Preview:")
-    print(logs.head())
+    # Anonymize Name
+    df['Name'] = df['Name'].apply(lambda x: f"Person_{hash_string(x)}")
 
-    # Define the threshold for anomaly detection
-    threshold = 0.19
+    # Anonymize Email
+    df['Email'] = df['Email'].apply(lambda x: f"email_{hash_string(x)}@anonymous.com")
 
-    # Detect anomalies based on the threshold
-    anomalies = detect_anomalies(logs, threshold)
+    # Age and Height are not PII, but we'll group them for additional privacy
+    df['Age'] = pd.cut(df['Age'], bins=[0, 30, 40, 50, 100], labels=['18-30', '31-40', '41-50', '51+'])
+    df['Height'] = pd.cut(df['Height'], bins=[0, 160, 170, 180, 200], labels=['<160cm', '160-170cm', '171-180cm', '>180cm'])
 
-    # Print detected anomalies
-    print("\nAnomalies detected:")
-    print(anomalies)
+    return df
+
+# Example usage
+file_path = '/content/drive/MyDrive/AI-Ethics/personal_dataset.xlsx'
+anonymized_df = anonymize_dataset(file_path)
+print(anonymized_df)
